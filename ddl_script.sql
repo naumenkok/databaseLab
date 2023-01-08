@@ -53,7 +53,6 @@ create table employees
     first_name  varchar2(20) not null,
     last_name   varchar2(20) not null,
     job_title   varchar2(30) not null,
-    email       varchar2(30) not null,
     phone       varchar2(15) not null,
     position_id int references positions (position_id)
 );
