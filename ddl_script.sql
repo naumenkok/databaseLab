@@ -54,11 +54,41 @@ create table employees
     last_name   varchar2(20) not null,
     job_title   varchar2(30) not null,
     email       varchar2(30) not null,
-    phone       varchar2(15) not null
+    phone       varchar2(15) not null,
+    position_id int references positions (position_id)
+);
+create table positions
+(
+    position_id int primary key,
+    name        varchar2(30)  not null,
+    min_salary  number(10, 2) not null,
+    max_salary  number(10, 2) not null
 );
 create table payroll
 (
     employee_id integer primary key,
     salary      number(10, 2) not null,
     foreign key (employee_id) references employees (employee_id)
+);
+create table additional_services
+(
+    service_id  int primary key,
+    name        varchar2(30)  not null,
+    description varchar2(255) not null,
+    price       number(5, 2)
+);
+create table additional_services_orders
+(
+    id         int primary key,
+    guest_id   int references guests (guest_id),
+    service_id int references additional_services (service_id),
+    order_date date not null
+);
+create table opinions
+(
+    id           int primary key,
+    guest_id     int references guests (guest_id),
+    opinion      varchar2(255) not null,
+    score        int           not null,
+    opinion_date date          not null
 );
