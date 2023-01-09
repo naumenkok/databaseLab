@@ -1,16 +1,41 @@
+create table room_types
+(
+    rt_id   integer primary key,
+    room_type_name varchar2(30)
+);
+
 create table rooms
 (
     room_number       number(3) primary key,
-    room_type_id      integer      not null references room_types (room_type_id),
+    room_type_id      integer      not null references room_types (rt_id),
     number_of_beds    number(1)    not null,
     price_per_night   number(5, 2) not null,
     room_availability varchar2(10) not null
 );
-create table room_types
+
+create table amenities
 (
-    room_type_id   integer primary key,
-    room_type_name varchar2(30)
+    amenity_id   integer primary key,
+    amenity_name varchar(50) not null
 );
+
+create table room_amenity
+(
+    ra_id          integer primary key,
+    room_number integer not null,
+    amenity_id  integer not null,
+    foreign key (room_number) references rooms (room_number),
+    foreign key (amenity_id) references amenities (amenity_id)
+);
+
+create table additional_services
+(
+    as_id  int primary key,
+    name        varchar2(30)  not null,
+    description varchar2(255) not null,
+    price       number(5, 2)
+);
+
 create table guests
 (
     guest_id     integer primary key,
@@ -19,6 +44,7 @@ create table guests
     address      varchar2(30) not null,
     phone_number varchar2(15) not null
 );
+
 create table reservations
 (
     reservation_id   int primary key,
@@ -28,25 +54,39 @@ create table reservations
     discount_percent int,
     total_price      number(10, 2)
 );
+
+create table opinions
+(
+    opinion_id           int primary key,
+    guest_id     int references guests (guest_id),
+    opinion      varchar2(255) not null,
+    score        int           not null,
+    opinion_date date          not null
+);
+
+create table additional_services_orders
+(
+    aso_id         int primary key,
+    guest_id   int references guests (guest_id),
+    service_id int references additional_services (as_id),
+    order_date date not null
+);
+
 create table room_reservation
 (
-    id             int primary key,
+    rr_id             int primary key,
     reservation_id int references reservations (reservation_id),
     room_number    number(3) references rooms (room_number)
 );
-create table amenities
+
+create table positions
 (
-    amenity_id   integer primary key,
-    amenity_name varchar(50) not null
+    position_id int primary key,
+    name        varchar2(30)  not null,
+    min_salary  number(10, 2) not null,
+    max_salary  number(10, 2) not null
 );
-create table room_amenity
-(
-    id          integer primary key,
-    room_number integer not null,
-    amenity_id  integer not null,
-    foreign key (room_number) references rooms (room_number),
-    foreign key (amenity_id) references amenities (amenity_id)
-);
+
 create table employees
 (
     employee_id integer primary key,
@@ -56,38 +96,10 @@ create table employees
     phone       varchar2(15) not null,
     position_id int references positions (position_id)
 );
-create table positions
-(
-    position_id int primary key,
-    name        varchar2(30)  not null,
-    min_salary  number(10, 2) not null,
-    max_salary  number(10, 2) not null
-);
+
 create table payroll
 (
-    employee_id integer primary key,
+    payroll_id integer primary key,
     salary      number(10, 2) not null,
-    foreign key (employee_id) references employees (employee_id)
-);
-create table additional_services
-(
-    service_id  int primary key,
-    name        varchar2(30)  not null,
-    description varchar2(255) not null,
-    price       number(5, 2)
-);
-create table additional_services_orders
-(
-    id         int primary key,
-    guest_id   int references guests (guest_id),
-    service_id int references additional_services (service_id),
-    order_date date not null
-);
-create table opinions
-(
-    id           int primary key,
-    guest_id     int references guests (guest_id),
-    opinion      varchar2(255) not null,
-    score        int           not null,
-    opinion_date date          not null
+    employee_id int references employees (employee_id)
 );
