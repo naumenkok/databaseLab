@@ -83,7 +83,7 @@ BEGIN
     
     IF v_numb_of_ad_serv >= 3 AND v_discount_percent < v_new_disc THEN
         UPDATE reservations SET discount_percent = v_new_disc WHERE reservation_id = reserv_id;
-        dbms_output.put_line ('Zmieniono znizke dla rezerwacji o numerze '|| reserv_id || ' na '|| v_discount_percent);
+        dbms_output.put_line ('Zmieniono znizke dla rezerwacji o numerze '|| reserv_id || ' na '|| v_new_disc);
     END IF;
 END;
 /
