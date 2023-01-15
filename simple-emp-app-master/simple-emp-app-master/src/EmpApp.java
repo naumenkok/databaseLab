@@ -29,7 +29,7 @@ public class EmpApp {
 
         File myObj = new File("connection.properties");
         String pathToProperties = myObj.getAbsolutePath();
-        pathToProperties = pathToProperties.replace("connection.properties", "simple-emp-app-master\\simple-emp-app-master\\connection.properties");
+        pathToProperties = pathToProperties.replace("connection.properties", "simple-emp-app-master\\connection.properties");
         pathToProperties = pathToProperties.replace("\\", "\\\\");
 
         Properties prop = new Properties();
