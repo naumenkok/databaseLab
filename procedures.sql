@@ -56,12 +56,16 @@ begin
     end if;
 end;
 /
+
+--wyzwalacz, ktory po dodaniu nowego zamowienia serwisu dodatkowego wywoluje wyzwalacz do zmiany ceny:
 create or replace trigger additional_services_cost_trigger
     after insert on additional_services_orders
     for each row
     begin
         execute immediate 'trigger reservation_cost_monitor';
     end;
+    
+--wyzwalacz, ktory po dodaniu albo zmianie rezerwacji oblicza nowy koszt zakwaterowania i zmienia ostateczna cene w tabeli 
 create or replace trigger reservation_cost_monitor
     after insert or update on reservations
     for each row
@@ -95,13 +99,13 @@ begin
     select first_name, last_name into v_name, v_surname from employees where employee_id = p_eid;
     v_new_salary := (v_min_salary + v_max_salary) / 2;
     update employees set position_id = p_pid where employee_id = p_eid;
-    dbms_output.put_line('zmieniono stanowisko pracownika ' || v_name || ' ' || v_surname || ' na ' || v_pos_name);
+    dbms_output.put_line('Zmieniono stanowisko pracownika ' || v_name || ' ' || v_surname || ' na ' || v_pos_name);
     update payroll set salary = v_new_salary where employee_id = p_eid;
-    dbms_output.put_line('zmieniono wyp³atê dla pracownika ' || v_name || ' ' || v_surname || ' na ' || v_new_salary);
+    dbms_output.put_line('Zmieniono wyplate dla pracownika ' || v_name || ' ' || v_surname || ' na ' || v_new_salary);
 end;
 /
 
--- wyzwalacz, ktory monitoruje czy placa pracownika miesci sie w zakresie przewidzianym przez stanowisko
+-- wyzwalacz, ktory monitoruje czy placa pracownika miesci sie w zakresie przewidzianym przez stanowisko:
 create or replace trigger payroll_salary_checker
     before update
     on payroll
@@ -116,7 +120,7 @@ begin
         from positions p join employees e on p.position_id = e.position_id where employee_id = :old.employee_id;
         if :new.salary > v_max_salary or :new.salary < v_min_salary then
             raise_application_error(-1,
-                                    'nie można zmienić pensji pracownika na niezgodną z zakresem przewidzianym na stanowisku.');
+                                    'Nie mozna zmieniac pensji pracownika na niezgodna z zakresem przewidzianym na stanowisku.');
         end if;
     end if;
 end;
@@ -140,19 +144,22 @@ begin
 
     if v_numb_of_ad_serv >= 3 and v_discount_percent < v_new_disc then
         update reservations set discount_percent = v_new_disc where reservation_id = reserv_id;
-        dbms_output.put_line('zmieniono znizke dla rezerwacji o numerze ' || reserv_id || ' na ' || v_new_disc);
+        dbms_output.put_line('Zmieniono znizke dla rezerwacji o numerze ' || reserv_id || ' na ' || v_new_disc);
     end if;
 end;
 /
 
+--wyzwalacz, ktory po usunieciu albo dodaniu rezerwacji zmienia status pokoju na wolny/zajety odpowiednio:
 create trigger update_room_availability
 after insert or delete on room_reservation
 for each row
 begin
 if inserting then
 update rooms set room_availability = 'unavailable' where room_number = :new.room_number;
+dbms_output.put_line('Zmieniono status pokoju na niedostepny');
 elsif deleting then
 update rooms set room_availability = 'available' where room_number = :old.room_number;
+dbms_output.put_line('Zmieniono status pokoju na dostepny');
 end if;
 end;
 /

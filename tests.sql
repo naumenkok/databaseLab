@@ -35,4 +35,31 @@ END;
 /
 SELECT reservation_id, discount_percent FROM reservations;
 
+-- Testowanie wyzwalacza, ktory monitoruje czy placa pracownika miesci sie w zakresie przewidzianym przez stanowisko:
+update payroll set salary = 83000 where employee_id=102; 
+update payroll set salary = 70000 where employee_id=103; 
+update payroll set salary = 33400 where employee_id=107; 
+
+-- Testowanie wyzwalacza additional_services_cost_trigger i reservation_cost_monitor:
+insert into additional_services_orders (aso_id, guest_id, service_id, order_date)
+values (104, 101, 105, TO_DATE('2022-01-03', 'yyyy/mm/dd'));
+
+--Zapytanie zwracajace informacje o pracownikach takie jak: imiê i nazwisko, stanowisko oraz wynagrodzenie, jezeli ich zarobki sa wyzsze od srednich
+select e.first_name ||' '|| e.last_name as employee, e.job_title as position, p.salary
+from employees e join payroll p using(employee_id)
+where p.salary > (select avg(salary) from payroll);
+
+--Zapytanie zwracajace liste klientów wraz z laczna liczba zamowien
+select g.first_name || ' ' || g.last_name as guest, count(a.service_id) as order_count 
+from guests g join additional_services_orders a using(guest_id)
+group by g.first_name, g.last_name
+order by count(a.service_id) desc;
+
+--Zapytanie zwracajace pokoje i daty ich rezerwacji
+select r.room_number, r.room_availability, t.room_type_name, res.check_in, res.check_out
+from room_reservation rr right join rooms r on(r.room_number=rr.room_number) left join reservations res on(rr.reservation_id=res.reservation_id) join room_types t on(r.room_type_id=t.rt_id)
+order by t.room_type_name;
+
+
+
 
