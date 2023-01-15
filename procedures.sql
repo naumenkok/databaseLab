@@ -78,7 +78,7 @@ create or replace trigger reservation_cost_monitor
         end if;
     end;
 
---procedura, która zmienia stanowisko pracownika:
+--procedura, ktora zmienia stanowisko pracownika:
 create procedure update_pos(p_eid integer, p_pid integer)
 as
     v_min_salary positions.min_salary%type;
@@ -101,7 +101,7 @@ begin
 end;
 /
 
--- wyzwalacz, który monitoruje czy płaca pracownika mieści się w zakresie przewidzianym przez stanowisko
+-- wyzwalacz, ktory monitoruje czy placa pracownika miesci sie w zakresie przewidzianym przez stanowisko
 create or replace trigger payroll_salary_checker
     before update
     on payroll
@@ -121,7 +121,7 @@ begin
     end if;
 end;
 
---procedura, która aktualizuje znizke w zaleznosci od ilosci uslug dodatkowych:
+--procedura, ktora aktualizuje znizke w zaleznosci od ilosci uslug dodatkowych:
 create procedure update_disc(reserv_id integer)
 as
     v_guest_id         reservations.guest_id%type;

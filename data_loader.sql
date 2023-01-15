@@ -23,7 +23,14 @@ INSERT INTO rooms (room_number, room_type_id, number_of_beds, price_per_night, r
 VALUES (105, 103, 1, 200.00, 'Available');
 INSERT INTO rooms (room_number, room_type_id, number_of_beds, price_per_night, room_availability)
 VALUES (106, 103, 2, 220.00, 'Available');
-
+INSERT INTO rooms (room_number, room_type_id, number_of_beds, price_per_night, room_availability)
+VALUES (107, 101, 3, 150.00, 'Available');
+INSERT INTO rooms (room_number, room_type_id, number_of_beds, price_per_night, room_availability)
+VALUES (108, 101, 3, 150.00, 'Available');
+INSERT INTO rooms (room_number, room_type_id, number_of_beds, price_per_night, room_availability)
+VALUES (109, 101, 3, 150.00, 'Available');
+INSERT INTO rooms (room_number, room_type_id, number_of_beds, price_per_night, room_availability)
+VALUES (110, 103, 3, 250.00, 'Available');
 commit;
 
 
@@ -49,6 +56,26 @@ INSERT INTO room_amenity (ra_id, room_number, amenity_id)
 VALUES (103, 103, 102);
 INSERT INTO room_amenity (ra_id, room_number, amenity_id)
 VALUES (104, 104, 103);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (105, 105, 102);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (106, 105, 103);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (107, 106, 102);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (108, 106, 103);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (109, 107, 101);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (110, 108, 101);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (111, 109, 101);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (112, 110, 101);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (113, 110, 102);
+INSERT INTO room_amenity (ra_id, room_number, amenity_id)
+VALUES (114, 110, 103);
 
 commit;
 
@@ -61,6 +88,10 @@ INSERT INTO additional_services (as_id, name, description, price)
 VALUES (102, 'Laundry', 'Laundry service for guests'' clothing', 20.00);
 INSERT INTO additional_services (as_id, name, description, price)
 VALUES (103, 'Airport shuttle', 'Complimentary shuttle service to and from the airport', 25.00);
+INSERT INTO additional_services (as_id, name, description, price)
+VALUES (104, 'Dry-cleaner', 'Dry-cleaner service for guests clothing', 15.00);
+INSERT INTO additional_services (as_id, name, description, price)
+VALUES (105, 'Massage', 'In-room massage service', 25.00);
 
 commit;
 
@@ -125,6 +156,16 @@ INSERT INTO positions (position_id, name, min_salary, max_salary)
 VALUES (102, 'Supervisor', 40000.00, 60000.00);
 INSERT INTO positions (position_id, name, min_salary, max_salary)
 VALUES (103, 'Front desk clerk', 30000.00, 50000.00);
+INSERT INTO positions (position_id, name, min_salary, max_salary)
+VALUES (104, 'Driver', 35000.00, 55000.00);
+INSERT INTO positions (position_id, name, min_salary, max_salary)
+VALUES (105, 'Chambermaid', 30000.00, 50000.00);
+INSERT INTO positions (position_id, name, min_salary, max_salary)
+VALUES (106, 'Masseur', 45000.00, 60000.00);
+INSERT INTO positions (position_id, name, min_salary, max_salary)
+VALUES (107, 'Security guard', 30000.00, 40000.00);
+INSERT INTO positions (position_id, name, min_salary, max_salary)
+VALUES (108, 'Cook', 45000.00, 55000.00);
 
 commit;
 
@@ -137,6 +178,16 @@ INSERT INTO employees (employee_id, first_name, last_name, job_title, phone, pos
 VALUES (102, 'Bob', 'Johnson', 'Supervisor', '123-456-7893', 102);
 INSERT INTO employees (employee_id, first_name, last_name, job_title, phone, position_id)
 VALUES (103, 'Charlie', 'Williams', 'Front desk clerk', '123-456-7894', 103);
+INSERT INTO employees (employee_id, first_name, last_name, job_title, phone, position_id)
+VALUES (104, 'George', 'Brown', 'Driver', '123-222-7373', 104);
+INSERT INTO employees (employee_id, first_name, last_name, job_title, phone, position_id)
+VALUES (105, 'Elizabeth', 'Jones', 'Chambermaid', '123-384-2535', 105);
+INSERT INTO employees (employee_id, first_name, last_name, job_title, phone, position_id)
+VALUES (106, 'Somchai', 'Wang', 'Masseur', '123-943-6685', 106);
+INSERT INTO employees (employee_id, first_name, last_name, job_title, phone, position_id)
+VALUES (107, 'David', 'Anderson', 'Security guard', '123-397-9537', 107);
+INSERT INTO employees (employee_id, first_name, last_name, job_title, phone, position_id)
+VALUES (108, 'William', 'Taylor', 'Cook', '123-961-1483', 108);
 
 commit;
 
@@ -149,5 +200,15 @@ INSERT INTO payroll (payroll_id, employee_id, salary)
 VALUES (102, 102, 50000.00);
 INSERT INTO payroll (payroll_id, employee_id, salary)
 VALUES (103, 103, 40000.00);
+INSERT INTO payroll (payroll_id, employee_id, salary)
+VALUES (104, 104, 40000.00);
+INSERT INTO payroll (payroll_id, employee_id, salary)
+VALUES (105, 105, 39000.00);
+INSERT INTO payroll (payroll_id, employee_id, salary)
+VALUES (106, 106, 57000.00);
+INSERT INTO payroll (payroll_id, employee_id, salary)
+VALUES (107, 107, 34000.00);
+INSERT INTO payroll (payroll_id, employee_id, salary)
+VALUES (108, 108, 51000.00);
 
 commit;
