@@ -1,5 +1,5 @@
 --funkcja zwracajaca koszt wszystkich uslug dodatkowych:
-create function ad_serv_price(g_id integer)
+create or replace function ad_serv_price(g_id integer)
     return number
 as
     v_ad_serv additional_services.price%type;
@@ -20,7 +20,7 @@ end;
 /
 
 --funkcja zwracajaca ostateczny koszt zakwaterowania i obslugi dla danego goscia:
-create function get_total_price(reserv_id integer)
+create or replace function get_total_price(reserv_id integer)
     return number
 as
     v_guest_id         reservations.guest_id%type;
@@ -57,33 +57,47 @@ begin
 end;
 /
 
---wyzwalacz, ktory po dodaniu nowego zamowienia serwisu dodatkowego wywoluje wyzwalacz do zmiany ceny:
 create or replace trigger additional_services_cost_trigger
-    after insert on additional_services_orders
+    after insert
+    on additional_services_orders
     for each row
-    begin
-        execute immediate 'trigger reservation_cost_monitor';
-    end;
-    
---wyzwalacz, ktory po dodaniu albo zmianie rezerwacji oblicza nowy koszt zakwaterowania i zmienia ostateczna cene w tabeli 
+declare
+    cursor reservation_ids is select RESERVATION_ID
+                              from RESERVATIONS
+                              where RESERVATIONS.GUEST_ID = :new.GUEST_ID;
+begin
+    open reservation_ids;
+    for curr_id in reservation_ids
+        loop
+            update_reservation_total_cost(curr_id.RESERVATION_ID);
+        end loop;
+    close reservation_ids;
+end;
+
+--wyzwalacz, ktory po dodaniu albo zmianie rezerwacji updatuje koszt rezerwacji
 create or replace trigger reservation_cost_monitor
-    after insert or update on reservations
+    after insert or update
+    on reservations
     for each row
-    begin
-        if inserting then
-            update_disc(:new.RESERVATION_ID);
-            update reservations set total_price = get_total_price(:new.reservation_id) where reservation_id = :new.reservation_id;
+begin
+    if inserting then
+        update_reservation_total_cost(:new.RESERVATION_ID);
+    end if;
+    if updating then
+        if :old.check_out != :new.check_out then
+            update_reservation_total_cost(:old.RESERVATION_ID);
         end if;
-        if updating then
-            if :old.check_out != :new.check_out then
-                update_disc(:new.RESERVATION_ID);
-                update reservations set total_price = get_total_price(:old.reservation_id) where reservation_id = :old.reservation_id;
-            end if;
-        end if;
-    end;
+    end if;
+end;
+/
+create or replace procedure update_reservation_total_cost(reserv_id int) as
+begin
+    update_disc(reserv_id);
+    update reservations set total_price = get_total_price(reserv_id) where reservation_id = reserv_id;
+end;
 
 --procedura, ktora zmienia stanowisko pracownika:
-create procedure update_pos(p_eid integer, p_pid integer)
+create or replace procedure update_pos(p_eid integer, p_pid integer)
 as
     v_min_salary positions.min_salary%type;
     v_max_salary positions.max_salary%type;
@@ -117,7 +131,9 @@ begin
     if :old.salary != :new.salary then
         select min_salary, max_salary
         into v_min_salary,v_max_salary
-        from positions p join employees e on p.position_id = e.position_id where employee_id = :old.employee_id;
+        from positions p
+                 join employees e on p.position_id = e.position_id
+        where employee_id = :old.employee_id;
         if :new.salary > v_max_salary or :new.salary < v_min_salary then
             raise_application_error(-1,
                                     'Nie mozna zmieniac pensji pracownika na niezgodna z zakresem przewidzianym na stanowisku.');
@@ -126,7 +142,7 @@ begin
 end;
 
 --procedura, ktora aktualizuje znizke w zaleznosci od ilosci uslug dodatkowych:
-create procedure update_disc(reserv_id integer)
+create or replace procedure update_disc(reserv_id integer)
 as
     v_guest_id         reservations.guest_id%type;
     v_discount_percent reservations.discount_percent%type;
@@ -150,16 +166,17 @@ end;
 /
 
 --wyzwalacz, ktory po usunieciu albo dodaniu rezerwacji zmienia status pokoju na wolny/zajety odpowiednio:
-create trigger update_room_availability
-after insert or delete on room_reservation
-for each row
+create or replace trigger update_room_availability
+    after insert or delete
+    on room_reservation
+    for each row
 begin
-if inserting then
-update rooms set room_availability = 'unavailable' where room_number = :new.room_number;
-dbms_output.put_line('Zmieniono status pokoju na niedostepny');
-elsif deleting then
-update rooms set room_availability = 'available' where room_number = :old.room_number;
-dbms_output.put_line('Zmieniono status pokoju na dostepny');
-end if;
+    if inserting then
+        update rooms set room_availability = 'unavailable' where room_number = :new.room_number;
+        dbms_output.put_line('Zmieniono status pokoju na niedostepny');
+    elsif deleting then
+        update rooms set room_availability = 'available' where room_number = :old.room_number;
+        dbms_output.put_line('Zmieniono status pokoju na dostepny');
+    end if;
 end;
 /
