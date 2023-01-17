@@ -135,7 +135,7 @@ begin
                  join employees e on p.position_id = e.position_id
         where employee_id = :old.employee_id;
         if :new.salary > v_max_salary or :new.salary < v_min_salary then
-            raise_application_error(-1,
+            raise_application_error(-20001,
                                     'Nie mozna zmieniac pensji pracownika na niezgodna z zakresem przewidzianym na stanowisku.');
         end if;
     end if;
