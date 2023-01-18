@@ -60,6 +60,6 @@ select r.room_number, r.room_availability, t.room_type_name, res.check_in, res.c
 from room_reservation rr right join rooms r on(r.room_number=rr.room_number) left join reservations res on(rr.reservation_id=res.reservation_id) join room_types t on(r.room_type_id=t.rt_id)
 order by t.room_type_name;
 
-
+insert into RESERVATIONS (RESERVATION_ID, GUEST_ID, CHECK_IN, CHECK_OUT) values (103,102,sysdate,'2023-01-20');
 
 

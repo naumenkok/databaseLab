@@ -79,6 +79,8 @@ create or replace trigger reservation_cost_monitor
     after insert or update
     on reservations
     for each row
+declare
+    PRAGMA AUTONOMOUS_TRANSACTION;
 begin
     if inserting then
         update_reservation_total_cost(:new.RESERVATION_ID);
@@ -91,9 +93,11 @@ begin
 end;
 /
 create or replace procedure update_reservation_total_cost(reserv_id int) as
+    PRAGMA AUTONOMOUS_TRANSACTION;
 begin
     update_disc(reserv_id);
     update reservations set total_price = get_total_price(reserv_id) where reservation_id = reserv_id;
+    commit;
 end;
 
 --procedura, ktora zmienia stanowisko pracownika:
@@ -116,6 +120,7 @@ begin
     dbms_output.put_line('Zmieniono stanowisko pracownika ' || v_name || ' ' || v_surname || ' na ' || v_pos_name);
     update payroll set salary = v_new_salary where employee_id = p_eid;
     dbms_output.put_line('Zmieniono wyplate dla pracownika ' || v_name || ' ' || v_surname || ' na ' || v_new_salary);
+    commit;
 end;
 /
 
@@ -148,7 +153,9 @@ as
     v_discount_percent reservations.discount_percent%type;
     v_new_disc         reservations.discount_percent%type := 25;
     v_numb_of_ad_serv  integer;
+    PRAGMA AUTONOMOUS_TRANSACTION;
 begin
+    v_new_disc := 25;
     select guest_id, discount_percent
     into v_guest_id, v_discount_percent
     from reservations
@@ -161,6 +168,7 @@ begin
     if v_numb_of_ad_serv >= 3 and v_discount_percent < v_new_disc then
         update reservations set discount_percent = v_new_disc where reservation_id = reserv_id;
         dbms_output.put_line('Zmieniono znizke dla rezerwacji o numerze ' || reserv_id || ' na ' || v_new_disc);
+        commit;
     end if;
 end;
 /
@@ -178,5 +186,6 @@ begin
         update rooms set room_availability = 'Available' where room_number = :old.room_number;
         dbms_output.put_line('Zmieniono status pokoju na dostepny');
     end if;
+
 end;
 /
