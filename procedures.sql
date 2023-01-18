@@ -172,10 +172,10 @@ create or replace trigger update_room_availability
     for each row
 begin
     if inserting then
-        update rooms set room_availability = 'unavailable' where room_number = :new.room_number;
+        update rooms set room_availability = 'Unavailable' where room_number = :new.room_number;
         dbms_output.put_line('Zmieniono status pokoju na niedostepny');
     elsif deleting then
-        update rooms set room_availability = 'available' where room_number = :old.room_number;
+        update rooms set room_availability = 'Available' where room_number = :old.room_number;
         dbms_output.put_line('Zmieniono status pokoju na dostepny');
     end if;
 end;
