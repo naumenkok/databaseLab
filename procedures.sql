@@ -73,6 +73,8 @@ begin
         end loop;
     close reservation_ids;
 end;
+/
+
 
 --wyzwalacz, ktory po dodaniu albo zmianie rezerwacji updatuje koszt rezerwacji
 create or replace trigger reservation_cost_monitor
@@ -92,6 +94,8 @@ begin
     end if;
 end;
 /
+
+
 create or replace procedure update_reservation_total_cost(reserv_id int) as
     PRAGMA AUTONOMOUS_TRANSACTION;
 begin
@@ -189,3 +193,6 @@ begin
 
 end;
 /
+
+
+-- DROP TRIGGER additional_services_cost_trigger;

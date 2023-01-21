@@ -103,3 +103,19 @@ create table payroll
     salary      number(10, 2) not null,
     employee_id int references employees (employee_id)
 );
+
+
+-- Sekcja dla usunięcia tabel
+-- drop table room_types cascade constraints;
+-- drop table rooms cascade constraints;
+-- drop table amenities cascade constraints;
+-- drop table room_amenity cascade constraints;
+-- drop table additional_services cascade constraints;
+-- drop table guests cascade constraints;
+-- drop table reservations cascade constraints;
+-- drop table opinions cascade constraints;
+-- drop table additional_services_orders cascade constraints;
+-- drop table room_reservation cascade constraints;
+-- drop table positions cascade constraints;
+-- drop table employees cascade constraints;
+-- drop table payroll cascade constraints;
