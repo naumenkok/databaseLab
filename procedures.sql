@@ -61,26 +61,8 @@ begin
 end;
 /
 
-create or replace trigger additional_services_cost_trigger
-    after insert
-    on additional_services_orders
-    for each row
-declare
-    cursor reservation_ids is select RESERVATION_ID
-                              from RESERVATIONS
-                              where RESERVATIONS.GUEST_ID = :new.GUEST_ID;
-begin
-    open reservation_ids;
-    for curr_id in reservation_ids
-        loop
-            update_reservation_total_cost_insert(curr_id.RESERVATION_ID);
-        end loop;
-    close reservation_ids;
-end;
-/
 
-
---wyzwalacz, ktory po dodaniu albo zmianie rezerwacji updatuje koszt rezerwacji
+-- wyzwalacz, ktory po dodaniu albo zmianie rezerwacji updatuje koszt rezerwacji
 create or replace trigger reservation_cost_monitor
     after insert or update
     on reservations
@@ -111,6 +93,8 @@ begin
     update reservations set total_price = get_total_price(reserv_id) where reservation_id = reserv_id;
     commit;
 end;
+
+DROP TRIGGER RESERVATION_COST_MONITOR;
 
 --procedura, ktora zmienia stanowisko pracownika:
 create or replace procedure update_pos(p_eid integer, p_pid integer)
@@ -158,7 +142,7 @@ begin
     end if;
 end;
 
---procedura, ktora aktualizuje znizke w zaleznosci od ilosci uslug dodatkowych:
+-- procedura, ktora aktualizuje znizke w zaleznosci od ilosci uslug dodatkowych:
 create or replace procedure update_disc(reserv_id integer)
 as
     v_guest_id         reservations.guest_id%type;
@@ -205,6 +189,3 @@ begin
 
 end;
 /
-
-
--- DROP TRIGGER additional_services_cost_trigger;

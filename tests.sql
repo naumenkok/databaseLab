@@ -33,7 +33,7 @@ BEGIN
         VALUES (105, v_guest_id, 101, TO_DATE('2022-01-03', 'yyyy/mm/dd'));
     SELECT reservation_id INTO v_reservation_id FROM reservations WHERE guest_id = v_guest_id;
     update_disc(v_reservation_id);
-END; 
+END;
 /
 SELECT reservation_id, discount_percent FROM reservations;
 
@@ -42,7 +42,7 @@ update payroll set salary = 83000 where employee_id=102;
 update payroll set salary = 70000 where employee_id=103;
 update payroll set salary = 33400 where employee_id=107;
 
--- Testowanie wyzwalacza additional_services_cost_trigger i reservation_cost_monitor:
+-- Testowanie wyzwalacza reservation_cost_monitor:
 insert into additional_services_orders (aso_id, guest_id, service_id, order_date)
 values (104, 101, 105, TO_DATE('2022-01-03', 'yyyy-mm-dd'));
 
