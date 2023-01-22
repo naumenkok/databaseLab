@@ -52,7 +52,11 @@ begin
     if v_discount_percent is not null then
         return v_price * (100 - v_discount_percent) / 100 + v_price_ad_s;
     else
-        return v_price + v_price_ad_s;
+        if v_price_ad_s is not null then
+            return v_price + v_price_ad_s;
+        else
+            return v_price;
+        end if;
     end if;
 end;
 /
@@ -69,7 +73,7 @@ begin
     open reservation_ids;
     for curr_id in reservation_ids
         loop
-            update_reservation_total_cost(curr_id.RESERVATION_ID);
+            update_reservation_total_cost_insert(curr_id.RESERVATION_ID);
         end loop;
     close reservation_ids;
 end;
@@ -85,19 +89,23 @@ declare
     PRAGMA AUTONOMOUS_TRANSACTION;
 begin
     if inserting then
-        update_reservation_total_cost(:new.RESERVATION_ID);
-    end if;
-    if updating then
+        update_reservation_total_cost_insert(:new.RESERVATION_ID);
+    elsif updating then
         if :old.check_out != :new.check_out then
-            update_reservation_total_cost(:old.RESERVATION_ID);
+            update_reservation_total_cost_update(:old.RESERVATION_ID);
         end if;
     end if;
 end;
 /
 
 
-create or replace procedure update_reservation_total_cost(reserv_id int) as
-    PRAGMA AUTONOMOUS_TRANSACTION;
+create or replace procedure update_reservation_total_cost_insert(reserv_id int) as
+begin
+    update reservations set total_price = get_total_price(reserv_id) where reservation_id = reserv_id;
+    commit;
+end;
+
+create or replace procedure update_reservation_total_cost_update(reserv_id int) as
 begin
     update_disc(reserv_id);
     update reservations set total_price = get_total_price(reserv_id) where reservation_id = reserv_id;
@@ -157,7 +165,6 @@ as
     v_discount_percent reservations.discount_percent%type;
     v_new_disc         reservations.discount_percent%type := 25;
     v_numb_of_ad_serv  integer;
-    PRAGMA AUTONOMOUS_TRANSACTION;
 begin
     v_new_disc := 25;
     select guest_id, discount_percent
@@ -168,8 +175,13 @@ begin
     into v_numb_of_ad_serv
     from additional_services_orders
     where guest_id = v_guest_id;
-
-    if v_numb_of_ad_serv >= 3 and v_discount_percent < v_new_disc then
+    if v_discount_percent is null then
+        v_discount_percent := 0;
+    end if;
+    if v_guest_id is null or v_numb_of_ad_serv is null
+    then
+        DBMS_OUTPUT.PUT_LINE('Brakuje potrzebnych danych do zmiany zniżki.');
+    elsif v_numb_of_ad_serv >= 3 and v_discount_percent < v_new_disc then
         update reservations set discount_percent = v_new_disc where reservation_id = reserv_id;
         dbms_output.put_line('Zmieniono znizke dla rezerwacji o numerze ' || reserv_id || ' na ' || v_new_disc);
         commit;
