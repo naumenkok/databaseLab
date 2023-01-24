@@ -189,3 +189,22 @@ begin
 
 end;
 /
+create or replace procedure get_guest_services(c_guest_id in number) as
+    cursor c_services is
+        select aso.service_id, aso.guest_id, ass.name, ass.price
+        from ADDITIONAL_SERVICES_ORDERS aso
+                 join ADDITIONAL_SERVICES ass on aso.service_id = ass.as_id
+        where aso.guest_id = c_guest_id;
+    v_service_id ADDITIONAL_SERVICES_ORDERS.service_id%type;
+    v_guest_id   ADDITIONAL_SERVICES_ORDERS.guest_id%type;
+    v_name       ADDITIONAL_SERVICES.name%type;
+    v_price      ADDITIONAL_SERVICES.price%type;
+begin
+    open c_services;
+    loop
+        fetch c_services into v_service_id, v_guest_id, v_name, v_price;
+        exit when c_services%notfound;
+        dbms_output.put_line('Service ID: ' || v_service_id || ', Name: ' || v_name || ', Price: ' || v_price);
+    end loop;
+    close c_services;
+end;

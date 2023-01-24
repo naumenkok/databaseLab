@@ -64,3 +64,11 @@ order by t.room_type_name;
 select *
 from RESERVATIONS;
 insert into RESERVATIONS (RESERVATION_ID, GUEST_ID, CHECK_IN, CHECK_OUT) values (104,102,TO_DATE(sysdate, 'yyyy-mm-dd'),TO_DATE('2023-01-20', 'yyyy-mm-dd'));
+
+-- Test dla procedury get_guest_services
+declare
+    v_guest_id ADDITIONAL_SERVICES_ORDERS.guest_id%type;
+begin
+    select GUEST_ID into v_guest_id from ADDITIONAL_SERVICES_ORDERS group by GUEST_ID order by count(GUEST_ID) desc fetch first 1 rows only;
+    GET_GUEST_SERVICES(v_guest_id);
+end;
