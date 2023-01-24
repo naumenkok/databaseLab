@@ -189,6 +189,7 @@ begin
 
 end;
 /
+--procedura, która zwraca wszystkie zamówione przez gościa dodatkowe usługi wraz z cenami
 create or replace procedure get_guest_services(c_guest_id in number) as
     cursor c_services is
         select aso.service_id, aso.guest_id, ass.name, ass.price
